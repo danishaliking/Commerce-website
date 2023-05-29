@@ -1,0 +1,49 @@
+<?php
+// login
+if (isset($_POST['admin_login'])) {
+    $user_username=$_POST['username'];
+    $user_password = $_POST['password'];
+
+    $select_query = "SELECT * FROM `admin_table` WHERE   email='$email' && password='$user_password'";
+    $result = mysqli_query($con, $select_query);
+    $row_count = mysqli_num_rows($result);
+    $row_data = mysqli_fetch_assoc($result);
+    $user_ip= getIPAddress();
+
+// cart items
+$select_query_cart = "SELECT * FROM `cart_details` WHERE ip_address='$user_ip'";
+$select_cart=mysqli_query($con,$select_query_cart);
+$row_count_cart = mysqli_num_rows($select_cart);
+    if ($row_count > 0) {
+        $_SESSION['username']=$user_username;
+        if (password_verify($user_password, $row_data['password'])) {
+            // echo "<script>alert('Login Successfully')</script>";
+            if($row_count>0==1 and $row_count_cart==0){
+                $_SESSION['username']=$user_username;
+                echo "<script>alert('Login Successfully')</script>";
+                echo "<script>window.open('profile.php','_self')</script>";
+            }else{
+                $_SESSION['username']=$user_username;
+                echo "<script>alert('Login Successfully')</script>";
+                echo "<script>window.open('payment.php','_self')</script>";
+            }
+        } else {
+            echo "<script>alert('Invalid Credentials')</script>";
+        }
+    } else {
+        echo "<script>alert('Invalid Credentials')</script>";
+    }
+}
+?>
+<!-- php code -->
+<?php
+if (isset($_POST['admin_registration'])) {
+$username = mysqli_real_escape_string($con, $_POST['username']);
+$email = mysqli_real_escape_string($con, $_POST['email']);
+$pass = mysqli_real_escape_string($con, md5($_POST['password']));
+$cpass = mysqli_real_escape_string($con, md5($_POST['confirm_password']));
+
+mysqli_query($con, "INSERT INTO `admin_table`(admin_name, admin_email, admin_password) VALUES('$username', '$email', '$pass')") or die('query failed');
+header('location:admin_login.php');
+}
+?>
